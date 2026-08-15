@@ -1,0 +1,18 @@
+services:
+  # Backend NestJS Service on Render
+  - type: web
+    name: tamoura-backend
+    env: docker
+    rootDir: backend
+    dockerfilePath: Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        value: https://tamoura-platform.vercel.app

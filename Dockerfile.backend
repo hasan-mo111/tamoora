@@ -1,0 +1,32 @@
+# Root-level Dockerfile for NestJS Backend deployment on Render
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+RUN apk add --no-cache python3 make g++
+
+# Copy backend package descriptor
+COPY backend/package*.json ./
+RUN npm install
+
+# Copy backend source code
+COPY backend/ .
+RUN npm run build
+
+# Production Runner
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+RUN apk add --no-cache libc6-compat
+
+COPY backend/package*.json ./
+RUN npm install --omit=dev
+
+COPY --from=builder /app/dist ./dist
+RUN mkdir -p uploads
+
+EXPOSE 3001
+
+CMD ["node", "dist/main"]
